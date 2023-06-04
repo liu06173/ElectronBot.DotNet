@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,30 +10,42 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using ViewModels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using ElectronBot.Braincase;
 using ElectronBot.Braincase.Helpers;
+using ElectronBot.Braincase.Services;
+using Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace Controls.CompactOverlay;
 /// <summary>
-/// An empty window that can be used on its own or navigated to within a Frame.
+/// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class CompactOverlayWindow : WindowEx
+public sealed partial class ModelLoadCompactOverlayPage : Page
 {
-    public CompactOverlayWindow()
+    public ModelLoadCompactOverlayViewModel ViewModel
+    {
+        get;
+    }
+    public ModelLoadCompactOverlayPage()
     {
         this.InitializeComponent();
-        AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
-        Content = null;
-        Title = "AppDisplayName".GetLocalized();
+        ViewModel = App.GetService<ModelLoadCompactOverlayViewModel>();
     }
 
-    private void CompactOverlayWindow_OnClosed(object sender, WindowEventArgs args)
+    private void ModelLoadCompactOverlayPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        App.MainWindow.Show();
+        ModelProgressRing.IsActive = true;
+        ViewModel.Loaded();
+        ModelProgressRing.IsActive = false;
+    }
+
+    private async void ModelLoadCompactOverlayPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.UnLoaded();
     }
 }
