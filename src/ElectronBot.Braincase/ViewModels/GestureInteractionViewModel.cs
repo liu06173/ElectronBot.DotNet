@@ -17,12 +17,21 @@ using SharpDX;
 using Assimp;
 using HelixToolkit.SharpDX.Core.Assimp;
 using HelixToolkit.SharpDX.Core.Model.Scene;
+using Microsoft.UI.Xaml.Media;
 using BoundingBox = SharpDX.BoundingBox;
 using Camera = HelixToolkit.WinUI.Camera;
-using Verdure.ElectronBot.Core.Models;
+using Matrix = SharpDX.Matrix;
+using Microsoft.UI.Xaml.Controls;
+using ElectronBot.Braincase.Services;
+using Services;
+using System.Diagnostics;
+using Windows.Graphics.Imaging;
+using Mediapipe.Net.Solutions;
+using Microsoft.UI;
+using Constants = ElectronBot.Braincase.Constants;
 
-namespace ViewModels;
-public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
+namespace ElectronBot.Braincase.ViewModels;
+public partial class GestureInteractionViewModel : ObservableRecipient
 {
     public IEffectsManager EffectsManager
     {
@@ -97,6 +106,8 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
 
     [ObservableProperty] private TextureModel _environmentMap;
 
+    private bool _isInitialized = false;
+
     private readonly Importer _importer = new();
 
     private readonly DiffuseMaterial _pinkModelMaterial = new()
@@ -105,13 +116,18 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
         DiffuseColor = Color.LightPink// DiffuseMaterials.ToColor(255, 192, 203, 1.0),
     };
 
+    [ObservableProperty] private SolidColorBrush _cameraBackground = new(Colors.Red);
 
+    [ObservableProperty]
+    private Image _faceImage = new();
+
+    private static HandsCpuSolution? calculator;
     public Camera Camera
     {
         get;
     } = new OrthographicCamera() { NearPlaneDistance = 1e-2, FarPlaneDistance = 1e4 };
 
-    public ModelLoadCompactOverlayViewModel(IEffectsManager effectsManager)
+    public GestureInteractionViewModel(IEffectsManager effectsManager)
     {
         EffectsManager = effectsManager;
 
@@ -120,6 +136,8 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
             EnableUnLit = false,
             DiffuseMap = LoadTexture("eyes-closed.png")
         };
+
+        calculator = new HandsCpuSolution();
 
         var filePath = Package.Current.InstalledLocation.Path + "\\Assets\\Cubemap_Grandcanyon.dds";
 
@@ -140,46 +158,90 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
         ElectronBotHelper.Instance.PlayEmojisLock = true;
     }
 
+    [ObservableProperty]
+    private string _resultLabel;
+
+    [ObservableProperty] private Stack<string> _menuStack = new();
+
+    private int _firstMenuIndex = 0;
+
+    private int _secondMenuIndex = 0;
+
+    private bool _isFirstMenu = true;
+
+    [ObservableProperty]
+    private List<string> _firstMenu = new()
+    {
+        "ClockMode",
+        "EmojisMode",
+    };
+
+    [ObservableProperty]
+    private Dictionary<string, List<string>> _secondMenu = new()
+    {
+        {"ClockMode", new List<string>()
+        {
+            "DefautView",
+            "LongShadowView",
+            "GooeyFooter",
+            "GradientsWithBlend",
+            "CustomView",
+        } },
+        { "EmojisMode", new List<string>()
+        {
+            "anger",
+            "disdain",
+            "excited",
+            "fear",
+            "sad",
+        } },
+    };
+
+    [ObservableProperty] private string _firstMenuSelected;
+
+    [ObservableProperty] private string _secondMenuSelected;
+
+    private readonly string _modelPath = Package.Current.InstalledLocation.Path + $"\\Assets\\MLModel1.zip";
 
     [RelayCommand]
-    public void Loaded()
+    public async void Loaded()
     {
-        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
         {
             try
             {
                 var body = new List<string>()
-            {
-                "Body1.obj",
-                "Body2.obj",
-            };
+                {
+                    "Body1.obj",
+                    "Body2.obj",
+                };
 
                 var head = new List<string>()
-            {
-                "Head1.obj",
-                "Head2.obj",
-                "Head3.obj",
-            };
+                {
+                    "Head1.obj",
+                    "Head2.obj",
+                    "Head3.obj",
+                };
 
                 var leftArm = new List<string>()
-            {
-                "LeftArm1.obj",
-                "LeftArm2.obj",
-                "LeftShoulder.obj",
-            };
+                {
+                    "LeftArm1.obj",
+                    "LeftArm2.obj",
+                    "LeftShoulder.obj",
+                };
 
                 var rightArm = new List<string>()
-            {
-                "RightArm1.obj",
-                "RightArm2.obj",
-                "RightShoulder.obj"
-            };
+                {
+                    "RightArm1.obj",
+                    "RightArm2.obj",
+                    "RightShoulder.obj"
+                };
 
 
                 var baseBody = new List<string>()
-            {
-                "Base.obj",
-            };
+                {
+                    "Base.obj",
+                };
 
                 foreach (var modelName in head)
                 {
@@ -216,6 +278,7 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
                                 // Must use UI thread to set value back.
                                 HeadModelCentroidPoint = centroid;
                             }
+
                             foreach (var node in newScene.Root.Traverse())
                             {
                                 if (node is MeshNode meshNode)
@@ -418,16 +481,115 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
                 FocusCameraToScene();
 
                 ElectronBotHelper.Instance.ModelActionFrame += Instance_ModelActionFrame;
+
+                await InitAsync();
             }
             catch (Exception)
             {
                 ToastHelper.SendToast("模型加载失败", TimeSpan.FromSeconds(3));
             }
         });
-       
     }
 
-    public void UnLoaded()
+
+    private async Task InitAsync()
+    {
+        if (_isInitialized)
+        {
+            CameraFrameService.Current.SoftwareBitmapFrameCaptured -= Current_SoftwareBitmapFrameCaptured;
+
+            CameraFrameService.Current.SoftwareBitmapFrameHandPredictResult -= Current_SoftwareBitmapFrameHandPredictResult;
+            await CameraFrameService.Current.CleanupMediaCaptureAsync();
+        }
+        else
+        {
+            await InitializeScreenAsync();
+        }
+    }
+
+    private async Task InitializeScreenAsync()
+    {
+        await CameraFrameService.Current.PickNextMediaSourceWorkerAsync(FaceImage);
+
+        CameraFrameService.Current.SoftwareBitmapFrameCaptured += Current_SoftwareBitmapFrameCaptured;
+
+        CameraFrameService.Current.SoftwareBitmapFrameHandPredictResult += Current_SoftwareBitmapFrameHandPredictResult;
+
+        _isInitialized = true;
+
+        CameraBackground = new SolidColorBrush(Colors.Green);
+    }
+
+    private void Current_SoftwareBitmapFrameHandPredictResult(object? sender, string e)
+    {
+
+        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        {
+            ResultLabel = e;
+
+            if (e == "right")
+            {
+                if (!ElectronBotHelper.Instance.RightLock)
+                {
+                    ElectronBotHelper.Instance.RightLock = true;
+                    ElectronBotHelper.Instance.LeftLock = false;
+                    ElectronBotHelper.Instance.ForwardLock = false;
+                    ElectronBotHelper.Instance.UpLock = false;
+                }
+            }
+            else if (e == "left")
+            {
+                if (!ElectronBotHelper.Instance.LeftLock)
+                {
+                    ElectronBotHelper.Instance.LeftLock = true;
+                    ElectronBotHelper.Instance.RightLock = false;
+                    ElectronBotHelper.Instance.ForwardLock = false;
+                    ElectronBotHelper.Instance.UpLock = false;
+                }
+            }
+            else if (e == "up")
+            {
+                if (!ElectronBotHelper.Instance.UpLock)
+                {
+                    ElectronBotHelper.Instance.RightLock = false;
+                    ElectronBotHelper.Instance.LeftLock = false;
+                    ElectronBotHelper.Instance.ForwardLock = false;
+                    ElectronBotHelper.Instance.UpLock = true;
+                }
+
+            }
+            else if (e == "forward")
+            {
+                if (!ElectronBotHelper.Instance.ForwardLock)
+                {
+                    ElectronBotHelper.Instance.RightLock = false;
+                    ElectronBotHelper.Instance.LeftLock = false;
+                    ElectronBotHelper.Instance.UpLock = false;
+                    ElectronBotHelper.Instance.ForwardLock = true;
+                }
+
+            }
+        });
+    }
+
+    private void Current_SoftwareBitmapFrameCaptured(object? sender, SoftwareBitmapEventArgs e)
+    {
+        if (e.SoftwareBitmap is not null)
+        {
+
+            if (e.SoftwareBitmap.BitmapPixelFormat != BitmapPixelFormat.Bgra8 ||
+                  e.SoftwareBitmap.BitmapAlphaMode == BitmapAlphaMode.Straight)
+            {
+                e.SoftwareBitmap = SoftwareBitmap.Convert(
+                    e.SoftwareBitmap, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
+            }
+            var service = App.GetService<GestureClassificationService>();
+
+            _ = service.HandPredictResultUnUseQueueAsync(calculator, _modelPath, e.SoftwareBitmap);
+        }
+    }
+
+    public async void UnLoaded()
     {
         ElectronBotHelper.Instance.ModelActionFrame -= Instance_ModelActionFrame;
         HeadModel.Dispose();
@@ -437,38 +599,25 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
         BaseModel.Dispose();
         EffectsManager.Dispose();
         _importer.Dispose();
-        ElectronBotHelper.Instance.PlayEmojisLock = false;
+
+        CameraFrameService.Current.SoftwareBitmapFrameCaptured -= Current_SoftwareBitmapFrameCaptured;
+
+        CameraFrameService.Current.SoftwareBitmapFrameHandPredictResult -= Current_SoftwareBitmapFrameHandPredictResult;
+        var service = App.GetService<EmoticonActionFrameService>();
+        service.ClearQueue();
+        await CleanUpAsync();
     }
 
-    private void Instance_ModelActionFrame(object? sender, Verdure.ElectronBot.Core.Models.ModelActionFrame ex)
+    private void Instance_ModelActionFrame(object? sender, Verdure.ElectronBot.Core.Models.ModelActionFrame e)
     {
-        var e = new OnlyAction();
-
-        if (ElectronBotHelper.Instance.IsEntityFirstEnabled)
-        {
-            e = ex.Actions;
-        }
-        else
-        {
-            e = new OnlyAction()
-            {
-                J1 = ex.J1,
-                J2 = ex.J2,
-                J3 = ex.J3,
-                J4 = ex.J4,
-                J5 = ex.J5,
-                J6 = ex.J6
-            };
-        }
-
         App.MainWindow.DispatcherQueue.TryEnqueue(() =>
         {
-            BodyModel.HxTransform3D = _bodyMt * Matrix.RotationY(MathUtil.DegreesToRadians(-(e.J6)));
+            BodyModel.HxTransform3D = _bodyMt * Matrix.RotationY(MathUtil.DegreesToRadians((e.J6)));
 
             Material = new DiffuseMaterial()
             {
                 EnableUnLit = false,
-                DiffuseMap = LoadTextureByStream(ex.FrameStream)
+                DiffuseMap = LoadTextureByStream(e.FrameStream)
             };
 
 
@@ -480,18 +629,10 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
                 {
                     foreach (var node in itemMode.Traverse())
                     {
-                        try
+                        if (node is MeshNode meshNode)
                         {
-                            if (node is MeshNode meshNode)
-                            {
-                                meshNode.Material = Material;
-                            }
+                            meshNode.Material = Material;
                         }
-                        catch (Exception)
-                        {
-
-                        }
-                       
                     }
                 }
             }
@@ -514,13 +655,13 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
 
             var tr2 = _rightArmMt * translationMatrix;
 
-            var tr3 = tr2 * Matrix.RotationZ(MathUtil.DegreesToRadians(-(e.J4)));
-            var tr4 = tr3 * Matrix.RotationX(MathUtil.DegreesToRadians(-(e.J5)));
+            var tr3 = tr2 * Matrix.RotationZ(MathUtil.DegreesToRadians(-(e.J2)));
+            var tr4 = tr3 * Matrix.RotationX(MathUtil.DegreesToRadians(-(e.J3)));
 
             var tr5 = tr4 * Matrix.Translation(rightAverage.X, rightAverage.Y, rightAverage.Z);
 
 
-            var tr6 = tr5 * Matrix.RotationY(MathUtil.DegreesToRadians(-(e.J6)));
+            var tr6 = tr5 * Matrix.RotationY(MathUtil.DegreesToRadians((e.J6)));
 
             RightArmModel.HxTransform3D = tr6;
 
@@ -529,13 +670,13 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
 
             var leftTr2 = _leftArmMt * leftMatrix;
 
-            var leftTr3 = leftTr2 * Matrix.RotationZ(MathUtil.DegreesToRadians((e.J2)));
-            var leftTr4 = leftTr3 * Matrix.RotationX(MathUtil.DegreesToRadians(-(e.J3)));
+            var leftTr3 = leftTr2 * Matrix.RotationZ(MathUtil.DegreesToRadians((e.J4)));
+            var leftTr4 = leftTr3 * Matrix.RotationX(MathUtil.DegreesToRadians(-(e.J5)));
 
             var leftTr5 = leftTr4 * Matrix.Translation(leftAverage.X, leftAverage.Y, leftAverage.Z);
 
 
-            var leftTr6 = leftTr5 * Matrix.RotationY(MathUtil.DegreesToRadians(-(e.J6)));
+            var leftTr6 = leftTr5 * Matrix.RotationY(MathUtil.DegreesToRadians((e.J6)));
 
             LeftArmModel.HxTransform3D = leftTr6;
 
@@ -548,7 +689,7 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
             var headTr4 = headTr3 * Matrix.Translation(HeadModelCentroidPoint.X, HeadModelCentroidPoint.Y, HeadModelCentroidPoint.Z);
 
 
-            var headTr5 = headTr4 * Matrix.RotationY(MathUtil.DegreesToRadians(-(e.J6)));
+            var headTr5 = headTr4 * Matrix.RotationY(MathUtil.DegreesToRadians((e.J6)));
 
             HeadModel.HxTransform3D = headTr5;
         });
@@ -589,5 +730,19 @@ public partial class ModelLoadCompactOverlayViewModel : ObservableRecipient
     {
 
         return TextureModel.Create(data);
+    }
+
+    private async Task CleanUpAsync()
+    {
+        try
+        {
+            _isInitialized = false;
+
+            await CameraFrameService.Current.CleanupMediaCaptureAsync();
+        }
+        catch (Exception)
+        {
+
+        }
     }
 }
