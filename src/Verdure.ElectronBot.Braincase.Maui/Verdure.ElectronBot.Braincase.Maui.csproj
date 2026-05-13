@@ -62,7 +62,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ElectronBot.DotNet\ElectronBot.DotNet.csproj" />
+      <ProjectReference Include="..\Devices\ElectronBot.DotNet\ElectronBot.DotNet.csproj" />
     </ItemGroup>
 
 </Project>
