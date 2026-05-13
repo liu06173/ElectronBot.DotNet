@@ -6,10 +6,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+ENV EnableWindowsTargeting=true \
+    DOTNET_CLI_TELEMETRY_OPTOUT=1
+
 COPY repo/ .
 
 RUN git init
 
-RUN dotnet restore ElectronBot.Braincase.sln || true
+RUN dotnet restore ElectronBot.Braincase.sln
 
 CMD ["bash"]
