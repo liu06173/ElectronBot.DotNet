@@ -1,4 +1,4 @@
-// Copyright (c) homuler and The Vignette Authors
+
 // This file is part of MediaPipe.NET.
 // MediaPipe.NET is licensed under the MIT License. See LICENSE for details.
 
@@ -25,8 +25,6 @@ namespace Mediapipe.Net.Framework.Packets
 
         // Temp backwards compatibility until we find something better than the Activator. ¬¬
         internal Packet(IntPtr ptr, bool isOwner = true) : base((void*)ptr, isOwner) { }
-
-
         /// <remarks>To avoid copying the value, instantiate the packet with timestamp</remarks>
         /// <returns>New packet with the given timestamp and the copied value</returns>
         public Packet At(Timestamp timestamp)

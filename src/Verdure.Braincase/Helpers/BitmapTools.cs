@@ -134,8 +134,6 @@ public class BitmapTools
         }
 
         var destinationStream = new InMemoryRandomAccessStream();
-
-
         var transform = new BitmapTransform { ScaledWidth = aspectWidth, ScaledHeight = aspectHeight };
 
         var pixelData = await decoder.GetPixelDataAsync(
@@ -154,8 +152,6 @@ public class BitmapTools
         encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied, aspectWidth, aspectHeight, 96, 96,
             pixelData.DetachPixelData());
         await encoder.FlushAsync();
-
-
         return destinationStream;
     }
 
@@ -181,8 +177,6 @@ public class BitmapTools
 
         return rotatedStream;
     }
-
-
     /// <summary>
     /// Resizes and crops source file image so that resized image width/height are not larger than <param name="requestedMinSide"></param>
     /// </summary>

@@ -93,8 +93,6 @@ public class ElectronBotHelper
         get;
         set;
     }
-
-
     public bool ThirdFingerLock
     {
         get;
@@ -153,8 +151,6 @@ public class ElectronBotHelper
         get;
         set;
     } = false;
-
-
     public void InvokeClockCanvasStop()
     {
         ClockCanvasStop?.Invoke(this, new EventArgs());
@@ -164,8 +160,6 @@ public class ElectronBotHelper
     {
         ClockCanvasStart?.Invoke(this, new EventArgs());
     }
-
-
     public SerialPort SerialPort { get; set; } = new SerialPort();
 
     public List<Package> AppPackages = new();
@@ -189,8 +183,6 @@ public class ElectronBotHelper
         deviceWatcher.Removed += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(OnDeviceRemoved);
 
         deviceWatcher.Start();
-
-
         mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
         mediaPlayer.VideoFrameAvailable += MediaPlayer_VideoFrameAvailable;
 
@@ -217,8 +209,6 @@ public class ElectronBotHelper
 
         //// Start the watcher
         _usbDeviceWatcher.Start();
-
-
         //Create the HID device watcher
         _hidDeviceWatcher = DeviceInformation.CreateWatcher(HidDevice.GetDeviceSelector(0xff14, 0x01));
         _hidDeviceWatcher.Added += OnHidDeviceAdded;
@@ -254,8 +244,6 @@ public class ElectronBotHelper
         });
         Hw75GlobalTimerHelper.Instance.StopTimer();
     }
-
-
     private async void OnUsbDeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
     {
         try
@@ -362,11 +350,7 @@ public class ElectronBotHelper
                             {
                                 path = emojis.EmojisActionPath;
                             }
-
-
                             var json = await File.ReadAllTextAsync(path);
-
-
                             var actionList = JsonSerializer.Deserialize<List<ElectronBotAction>>(json);
 
                             if (actionList != null && actionList.Count > 0)
@@ -434,11 +418,7 @@ public class ElectronBotHelper
                             {
                                 path = emojis.EmojisActionPath;
                             }
-
-
                             var json = await File.ReadAllTextAsync(path);
-
-
                             var actionList = JsonSerializer.Deserialize<List<ElectronBotAction>>(json);
 
                             if (actionList != null && actionList.Count > 0)
@@ -599,8 +579,6 @@ public class ElectronBotHelper
                 {
                 }
             }
-
-
             try
             {
                 if (IsLibUsbFW)
@@ -644,8 +622,6 @@ public class ElectronBotHelper
 
             //        Thread.Sleep(3000);
             //    }
-
-
             //}
         }
     }
@@ -751,8 +727,6 @@ public class ElectronBotHelper
 
         }
     }
-
-
     public void ToPlayEmojisRandom()
     {
         PlayEmojisRandom?.Invoke(this, new EventArgs());
@@ -775,8 +749,6 @@ public class ElectronBotHelper
         AppPackages = PackageManager.FindPackagesForUser(string.Empty)
            .Where(p => p.IsFramework == false && !string.IsNullOrEmpty(p.DisplayName)).ToList();
     }
-
-
     public async Task SessionHaSwitchAsync(SessionSwitchReason switchReason)
     {
         var localSettingsService = Ioc.Default.GetRequiredService<ILocalSettingsService>();
@@ -815,8 +787,6 @@ public class ElectronBotHelper
             {
 
                 await speechAndTTSService.InitializeRecognizerAsync(SpeechRecognizer.SystemSpeechLanguage);
-
-
                 await speechAndTTSService.StartAsync();
                 isTTS = false;
             }

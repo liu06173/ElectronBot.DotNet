@@ -268,7 +268,7 @@ public class SpeechAndTTSService : ISpeechAndTTSService
 
             if (args.Result.Text.ToUpper() == "打开B站")
             {
-                await Launcher.LaunchUriAsync(new Uri(@"https://www.bilibili.com/"));
+                await Launcher.LaunchUriAsync(new Uri(@"https://www.bing.com/"));
             }
             else if (args.Result.Text.ToUpper() == "撒个娇")
             {

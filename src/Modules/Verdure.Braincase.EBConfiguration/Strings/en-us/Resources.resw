@@ -373,7 +373,7 @@
     <value>Add new emoji</value>
   </data>
   <data name="AppLogoAuthor.Content" xml:space="preserve">
-    <value>Application LOGO author (oooooohmygosh) station B address</value>
+    <value>Application LOGO reference</value>
   </data>
   <data name="AppTheme.Text" xml:space="preserve">
     <value>Apply theme</value>
@@ -391,7 +391,7 @@
     <value>Default camera</value>
   </data>
   <data name="ClockAuthor.Content" xml:space="preserve">
-    <value>Dial project reference author (DinoChan) Github address</value>
+    <value>Dial project reference</value>
   </data>
   <data name="ClockConfig.Text" xml:space="preserve">
     <value>Dial configuration</value>
@@ -853,7 +853,7 @@
     <value>微信</value>
   </data>
   <data name="VerdureBilibili.Content" xml:space="preserve">
-    <value>点击关注我B站获取最新消息</value>
+    <value>获取最新消息</value>
   </data>
   <data name="ChatGPTCustomTitle" xml:space="preserve">
     <value>ChatGPTCustom</value>

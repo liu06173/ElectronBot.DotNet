@@ -1,4 +1,4 @@
-// Copyright (c) homuler and The Vignette Authors
+
 // This file is part of MediaPipe.NET.
 // MediaPipe.NET is licensed under the MIT License. See LICENSE for details.
 
@@ -47,8 +47,6 @@ public static class HandDataFormatHelper
                 listDta.Add(landmark.Y);
                 listDta.Add(landmark.Z);
             }
-
-
             // Create single instance of sample data from first line of dataset for model input
             MLModel1.ModelInput sampleData = new MLModel1.ModelInput()
             {
@@ -116,8 +114,6 @@ public static class HandDataFormatHelper
                 Col61 = listDta[61],
                 Col62 = listDta[62],
             };
-
-
             MLModel1.SetModelPath(path);
             // Make a single prediction on the sample data and print results
             var predictionResult = MLModel1.Predict(sampleData);

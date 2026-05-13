@@ -1,4 +1,4 @@
-// Copyright (c) homuler and The Vignette Authors
+
 // This file is part of MediaPipe.NET.
 // MediaPipe.NET is licensed under the MIT License. See LICENSE for details.
 
@@ -21,8 +21,6 @@ namespace Mediapipe.Net.Native
 
         [Pure, DllImport(MEDIAPIPE_LIBRARY, ExactSpelling = true, CharSet = CharSet.Ansi)]
         public static extern int mp_ValidatedGraphConfig__OutputStreamToNode__PKc(void* config, string name);
-
-
         [Pure, DllImport(MEDIAPIPE_LIBRARY, ExactSpelling = true, CharSet = CharSet.Ansi)]
         public static extern byte mp_ValidatedGraphConfig_IsReservedExecutorName(string name);
 

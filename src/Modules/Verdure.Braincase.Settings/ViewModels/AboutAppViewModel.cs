@@ -18,7 +18,7 @@ public partial class AboutAppViewModel : ObservableRecipient
     [RelayCommand]
     public async Task FeedbackBtnAsync()
     {
-        await FeedbackAsync("gil.zhang.dev@outlook.com", "反馈", "这是一些反馈");
+        await FeedbackAsync("feedback@example.com", "反馈", "这是一些反馈");
     }
 
     public async Task FeedbackAsync(string address, string subject, string body)

@@ -197,7 +197,7 @@
                                                     Grid.Row="1"
                                                     Margin="4"
                                                     HorizontalAlignment="Center"
-                                                    NavigateUri="https://github.com/maker-community/ElectronBot.DotNet">
+                                                    NavigateUri="">
                                                     <HyperlinkButton.Content>
                                                         <StackPanel Orientation="Horizontal">
                                                             <FontIcon

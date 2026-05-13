@@ -12,11 +12,11 @@
     <IsPackable>true</IsPackable>
     <PackageId>Mediapipe.Net</PackageId>
     <Version>1.0.0-alpha2</Version>
-    <Authors>homuler;Vignette</Authors>
+    <Authors>Mediapipe.Net Contributors</Authors>
     <PackageTags>Google;Mediapipe;Tracking;Media Analysis</PackageTags>
     <Title>Mediapipe.Net</Title>
     <Description>Pure .NET bindings for MediaPipe</Description>
-    <Copyright>2022 homuler and Vignette</Copyright>
+    <Copyright>2022 The Mediapipe.Net Contributors</Copyright>
     <PackageProjectUrl>https://github.com/vignetteapp/MediaPipe.NET</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>

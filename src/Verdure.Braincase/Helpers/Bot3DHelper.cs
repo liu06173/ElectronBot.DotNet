@@ -11,8 +11,6 @@ public class Bot3DHelper
 
     private static Bot3DHelper? _instance;
     public static Bot3DHelper Instance => _instance ??= new Bot3DHelper();
-
-
     private readonly Importer _importer = new();
 
     private readonly DiffuseMaterial _pinkModelMaterial = new()
@@ -20,8 +18,6 @@ public class Bot3DHelper
         Name = "Pink",
         DiffuseColor = Color.LightPink// DiffuseMaterials.ToColor(255, 192, 203, 1.0),
     };
-
-
     public Bot3DHelper()
     {
         EffectsManager = Ioc.Default.GetRequiredService<IEffectsManager>();
@@ -31,8 +27,6 @@ public class Bot3DHelper
             EnableUnLit = false,
             DiffuseMap = LoadTexture("eyes-closed.png")
         };
-
-
         var filePath = Package.Current.InstalledLocation.Path + "\\Assets\\Cubemap_Grandcanyon.dds";
 
         EnvironmentMap = LoadTextureByFullPath(filePath);
@@ -42,8 +36,6 @@ public class Bot3DHelper
     {
         get;
     } = new OrthographicCamera() { NearPlaneDistance = 1e-2, FarPlaneDistance = 1e4 };
-
-
     public Matrix BodyMt { get; set; } = default;
 
     public Matrix LeftArmMt { get; set; } = default;
@@ -53,25 +45,13 @@ public class Bot3DHelper
     public Matrix HeadMt { get; set; } = default;
 
     public Matrix BaseMt { get; set; } = default;
-
-
     public Vector3 ModelCentroidPoint { get; set; } = default;
-
-
     public Vector3 HeadModelCentroidPoint { get; set; } = default;
-
-
     public BoundingBox RightShoulderBoundingBox { get; set; } = default;
-
-
     public BoundingBox LeftShoulderBoundingBox { get; set; } = default;
 
     public BoundingBox BodyBoundingBox { get; set; } = default;
-
-
     public BoundingBox HeadBoundingBox { get; set; } = default;
-
-
     public BoundingBox BaseBoundingBox { get; set; } = default;
 
     public IEffectsManager EffectsManager
@@ -146,8 +126,6 @@ public class Bot3DHelper
                     "RightArm2.obj",
                     "RightShoulder.obj"
                 };
-
-
             var baseBody = new List<string>()
                 {
                     "Base.obj",
@@ -209,8 +187,6 @@ public class Bot3DHelper
                     }
                 }
             }
-
-
             foreach (var modelName in body)
             {
                 var modelPath = Package.Current.InstalledLocation.Path + $"\\Assets\\ElectronBotModel\\{modelName}";
@@ -302,8 +278,6 @@ public class Bot3DHelper
                     }
                 }
             }
-
-
             foreach (var modelName in leftArm)
             {
                 var modelPath = Package.Current.InstalledLocation.Path + $"\\Assets\\ElectronBotModel\\{modelName}";

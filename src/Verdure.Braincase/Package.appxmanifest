@@ -17,7 +17,7 @@
 
   <Properties>
     <DisplayName>电子脑壳</DisplayName>
-    <PublisherDisplayName>绿荫阿广</PublisherDisplayName>
+    <PublisherDisplayName>ElectronBot</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

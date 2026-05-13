@@ -41,7 +41,7 @@
                                 FontFamily="/Assets/Font/SmileySans-Oblique.ttf#得意黑"
                                 Foreground="Red"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
-                                Text="如果你觉得本软件对你有帮助，你可以邮件反馈或者打赏作者。" />
+                                Text="If you find this software helpful, you can send feedback via email." />
                             <Button
                                 x:Uid="DaShang"
                                 Margin="8"
@@ -122,31 +122,26 @@
                     <TextBlock x:Uid="Reference" Style="{ThemeResource BodyTextBlockStyle}" />
 
                     <HyperlinkButton
-                        x:Uid="VerdureBilibili"
-                        Margin="{StaticResource SettingsPageHyperlinkButtonMargin}"
-                        NavigateUri="https://space.bilibili.com/25228512" />
-
-                    <HyperlinkButton
                         x:Uid="ElectronSourceCode"
                         Margin="{StaticResource SettingsPageHyperlinkButtonMargin}"
-                        NavigateUri="https://github.com/peng-zhihui/ElectronBot" />
+                        NavigateUri="" />
 
                     <HyperlinkButton
                         x:Uid="AppLogoAuthor"
                         Margin="{StaticResource SettingsPageHyperlinkButtonMargin}"
-                        NavigateUri="https://space.bilibili.com/38053181" />
+                        NavigateUri="" />
                     <HyperlinkButton
                         x:Uid="ClockAuthor"
                         Margin="{StaticResource SettingsPageHyperlinkButtonMargin}"
-                        NavigateUri="https://github.com/DinoChan" />
+                        NavigateUri="" />
                     <HyperlinkButton
                         x:Uid="ElectronBotInfo"
                         Margin="{StaticResource SettingsPageHyperlinkButtonMargin}"
-                        NavigateUri="https://github.com/maker-community/Verdure.Braincase" />
+                        NavigateUri="" />
                     <HyperlinkButton
                         x:Uid="ElectronBotCode"
                         Margin="{StaticResource SettingsPageHyperlinkButtonMargin}"
-                        NavigateUri="https://github.com/maker-community/ElectronBot.DotNet" />
+                        NavigateUri="" />
                 </StackPanel>
 
                 <TextBlock x:Uid="Settings_Update" Style="{ThemeResource SubtitleTextBlockStyle}" />

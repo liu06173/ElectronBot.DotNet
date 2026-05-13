@@ -367,7 +367,7 @@
     <value>새로운 이모티콘 추가</value>
   </data>
   <data name="AppLogoAuthor.Content" xml:space="preserve">
-    <value>응용 프로그램 로고 작성자(ooooooohmygosh) 스테이션 B 주소</value>
+    <value>응용 프로그램 로고 참조</value>
   </data>
   <data name="AppTheme.Text" xml:space="preserve">
     <value>테마 적용</value>
@@ -385,7 +385,7 @@
     <value>기본 카메라</value>
   </data>
   <data name="ClockAuthor.Content" xml:space="preserve">
-    <value>Dial 프로젝트 참조 작성자(DinoChan) Github 주소</value>
+    <value>Dial 프로젝트 참조</value>
   </data>
   <data name="ClockConfig.Text" xml:space="preserve">
     <value>다이얼 구성</value>
@@ -850,7 +850,7 @@
     <value>微信</value>
   </data>
   <data name="VerdureBilibili.Content" xml:space="preserve">
-    <value>点击关注我B站获取最新消息</value>
+    <value>获取最新消息</value>
   </data>
   <data name="ChatGPTCustomTitle" xml:space="preserve">
     <value>ChatGPTCustom</value>
