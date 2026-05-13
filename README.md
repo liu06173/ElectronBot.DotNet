@@ -6,6 +6,20 @@
 
 电子脑壳是一个为开源桌面机器人ElectronBot和瀚文键盘（HelloWord-Keyboard）提供软件功能的桌面程序项目，使用了微软的WASDK框架和C#语言。
 
+## 环境要求
+
+- Windows 10 (19041+) 或 Windows 11
+- Visual Studio 2022，安装 "Windows 应用程序开发" 工作负载
+- .NET 9 SDK
+- Windows App SDK 1.7+
+
+## 快速开始
+
+1. 克隆仓库：`git clone https://github.com/liu06173/ElectronBot.DotNet.git`
+2. 在 Visual Studio 2022 中打开 `ElectronBot.Braincase.sln`
+3. 选择 x64 平台，调试目标设为 `Verdure.Braincase`
+4. 按 F5 运行
+
 新版本页面
 
 ![电子脑壳AI交互版本](/Images/new_version.png)

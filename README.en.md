@@ -6,6 +6,20 @@
 
 Electronic Braincase is a desktop program project that provides software functions for the open-source desktop robot ElectronBot and Hanwen Keyboard (HelloWord-Keyboard), using Microsoft's WASDK framework and C# language.
 
+## Prerequisites
+
+- Windows 10 (19041+) or Windows 11
+- Visual Studio 2022 with "Windows application development" workload
+- .NET 9 SDK
+- Windows App SDK 1.7+
+
+## Quick Start
+
+1. Clone the repo: `git clone https://github.com/liu06173/ElectronBot.DotNet.git`
+2. Open `ElectronBot.Braincase.sln` in Visual Studio 2022
+3. Select x64 platform, set `Verdure.Braincase` as startup project
+4. Press F5 to run
+
 new version Page
 
 ![Electronic Braincase AI Interaction Version](/Images/new_version.png)
